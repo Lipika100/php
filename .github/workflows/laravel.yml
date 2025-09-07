@@ -14,22 +14,44 @@ jobs:
     steps:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
-        php-version: '8.0'
+        php-version: '8.0' # Note: Laravel 10+ requires PHP 8.1+, Laravel 11+ requires PHP 8.2+. You might consider updating this.
     - uses: actions/checkout@v4
+
+    # This step will list all files and directories in your repository.
+    # Use its output to verify the exact path to your Laravel project's root
+    # (where composer.json is located).
+    - name: List files in repository for debugging
+      run: ls -R
+
+    # All subsequent steps that interact with your Laravel project need to know its location.
+    # Replace './your-laravel-project-directory/' with the actual path,
+    # e.g., './app/', './src/my-app/', or if your repository *is* the Laravel project,
+    # then you can remove the 'working-directory' line from these steps.
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      working-directory: ./your-laravel-project-directory/ # <--- IMPORTANT: Update this path
+
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      working-directory: ./your-laravel-project-directory/ # <--- IMPORTANT: Update this path
+
     - name: Generate key
       run: php artisan key:generate
+      working-directory: ./your-laravel-project-directory/ # <--- IMPORTANT: Update this path
+
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
+      working-directory: ./your-laravel-project-directory/ # <--- IMPORTANT: Update this path
+
     - name: Create Database
       run: |
         mkdir -p database
         touch database/database.sqlite
+      working-directory: ./your-laravel-project-directory/ # <--- IMPORTANT: Update this path
+
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan test
+      working-directory: ./your-laravel-project-directory/ # <--- IMPORTANT: Update this path
