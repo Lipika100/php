@@ -37,7 +37,7 @@ jobs:
 
     - name: Generate key
       run: php artisan key:generate
-      working-directory: /workflows/# <--- IMPORTANT: Update this path
+      working-directory: workflows/ # <--- IMPORTANT: Update this path
 
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
